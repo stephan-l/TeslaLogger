@@ -145,14 +145,16 @@ function JSONDatetoString($jsondate)
 {
     if (empty($jsondate))
         return "";
-        
-    $ts = preg_replace( '/[^0-9]/', '', $jsondate);
-    if (empty($ts))
+
+    // altes .NET-Format: /Date(1795255551000)/
+    if (preg_match('/Date\((-?\d+)/', $jsondate, $m))
+        return date("Y-m-d H:i:s", intval($m[1]) / 1000);
+
+    // ISO-Format: 2026-11-21T12:21:10
+    $t = strtotime($jsondate);
+    if ($t === false)
         return "";
-        
-    $ts = intval($ts);
-    $date = date("Y-m-d H:i:s", $ts / 1000);
-    return $date;
+    return date("Y-m-d H:i:s", $t);
 }
 
 function GrafanaVersion()
